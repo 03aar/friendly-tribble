@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engage - Your Intelligent Work Companion</title>
+    <style>
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Design Tokens */
+        :root {
+            /* Colors */
+            --color-primary: #4A90E2;
+            --color-primary-light: #7FB3E8;
+            --color-primary-dark: #2E5A8E;
+            --color-success: #7ED321;
+            --color-success-light: #A8E063;
+            --color-warning: #F5A623;
+
+            /* Neutrals */
+            --color-background: #F8F9FA;
+            --color-surface: #FFFFFF;
+            --color-border: #E1E4E8;
+            --color-text-primary: #24292E;
+            --color-text-secondary: #586069;
+            --color-text-tertiary: #959DA5;
+
+            /* Gradients */
+            --gradient-background: linear-gradient(135deg, #D8F1E9 0%, #EFF6EE 48%, #FFFFFF 100%);
+            --gradient-sunrise: linear-gradient(180deg, #FFE5D9 0%, #D8F1E9 50%, #FFFFFF 100%);
+            --gradient-button: linear-gradient(135deg, #4A90E2, #5BA3F5);
+
+            /* Spacing */
+            --space-xs: 4px;
+            --space-sm: 8px;
+            --space-md: 16px;
+            --space-lg: 24px;
+            --space-xl: 32px;
+            --space-xxl: 48px;
+
+            /* Typography */
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-md: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 22px;
+            --font-size-xxl: 28px;
+
+            /* Border Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+            /* Animation */
+            --duration-fast: 200ms;
+            --duration-medium: 300ms;
+            --duration-slow: 500ms;
+            --easing-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        /* Base Styles */
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-md);
+            line-height: 1.5;
+            color: var(--color-text-primary);
+            background: var(--gradient-background);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+
+        /* Layout */
+        .app {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .view {
+            display: none;
+            opacity: 0;
+            animation: fadeIn var(--duration-medium) var(--easing-out) forwards;
+        }
+
+        .view.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Splash Screen */
+        .splash-view {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: var(--gradient-background);
+        }
+
+        .logo-container {
+            text-align: center;
+            animation: logoAppear 3s ease-in-out;
+        }
+
+        @keyframes logoAppear {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            40% { opacity: 0.3; transform: scale(0.95); }
+            60% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--space-lg);
+            background: var(--gradient-button);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 3px;
+            background: white;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            border-radius: 2px;
+        }
+
+        .logo-text {
+            font-size: var(--font-size-xl);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: var(--color-text-primary);
+        }
+
+        /* Auth Views */
+        .auth-view {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: var(--space-xl);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xxl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .auth-logo {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--space-lg);
+            background: var(--gradient-button);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .auth-logo::before {
+            content: '';
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+
+        .auth-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+        }
+
+        .auth-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            margin-bottom: var(--space-sm);
+            color: var(--color-text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            height: 52px;
+            padding: 0 var(--space-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-md);
+            font-family: var(--font-family);
+            background: var(--color-surface);
+            color: var(--color-text-primary);
+            transition: all var(--duration-fast);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-tertiary);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 52px;
+            padding: 0 var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-md);
+            font-weight: 600;
+            font-family: var(--font-family);
+            cursor: pointer;
+            transition: all var(--duration-fast);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-button);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: scale(0.98);
+            box-shadow: 0 6px 16px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.96);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface);
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover {
+            background: #F8FBFF;
+            transform: scale(0.98);
+        }
+
+        .btn-text {
+            background: transparent;
+            color: var(--color-primary);
+            padding: var(--space-sm) var(--space-md);
+            height: auto;
+        }
+
+        .btn-text:hover {
+            opacity: 0.8;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        /* Onboarding */
+        .onboarding-view {
+            min-height: 100vh;
+            padding: var(--space-xl);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .onboarding-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xxl);
+            box-shadow: var(--shadow-md);
+        }
+
+        .onboarding-progress {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xl);
+        }
+
+        .progress-dot {
+            flex: 1;
+            height: 4px;
+            background: var(--color-border);
+            border-radius: 2px;
+            transition: all var(--duration-medium);
+        }
+
+        .progress-dot.active {
+            background: var(--color-primary);
+        }
+
+        .progress-dot.completed {
+            background: var(--color-success);
+        }
+
+        .onboarding-step {
+            display: none;
+        }
+
+        .onboarding-step.active {
+            display: block;
+            animation: slideIn var(--duration-medium) var(--easing-out);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .step-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+        }
+
+        .step-description {
+            font-size: var(--font-size-md);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* Emoji Picker */
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--space-md);
+            margin: var(--space-lg) 0;
+        }
+
+        .emoji-option {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-xs);
+            padding: var(--space-md);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--duration-fast);
+            background: var(--color-surface);
+        }
+
+        .emoji-option:hover {
+            border-color: var(--color-primary);
+            transform: scale(1.05);
+        }
+
+        .emoji-option.selected {
+            border-color: var(--color-primary);
+            background: rgba(74, 144, 226, 0.05);
+        }
+
+        .emoji {
+            font-size: 32px;
+        }
+
+        .emoji-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            text-align: center;
+        }
+
+        /* Main App Layout */
+        .main-view {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-header {
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--space-md) var(--space-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .header-user {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: var(--font-size-md);
+        }
+
+        .user-role {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--duration-fast);
+        }
+
+        .icon-btn:hover {
+            background: var(--color-background);
+        }
+
+        .app-content {
+            flex: 1;
+            padding: var(--space-xl);
+            max-width: 680px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* FlowBoard */
+        .section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .priority-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+            box-shadow: var(--shadow-md);
+            border-left: 4px solid var(--color-primary);
+            margin-bottom: var(--space-xl);
+            transition: all var(--duration-medium);
+        }
+
+        .priority-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .card-label {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-md);
+        }
+
+        .card-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            color: var(--color-text-primary);
+        }
+
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: var(--space-lg);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-success), var(--color-success-light));
+            border-radius: 4px;
+            transition: width var(--duration-slow) var(--easing-out);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: var(--space-md);
+        }
+
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        .task-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            cursor: pointer;
+            transition: all var(--duration-fast);
+        }
+
+        .task-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateX(4px);
+        }
+
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--color-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all var(--duration-fast);
+        }
+
+        .task-card.completed .task-checkbox {
+            background: var(--color-success);
+            border-color: var(--color-success);
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: var(--space-xs);
+        }
+
+        .task-card.completed .task-title {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .task-time {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            background: var(--color-surface);
+            border-top: 1px solid var(--color-border);
+            padding: var(--space-sm) var(--space-lg);
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-xs);
+            padding: var(--space-sm);
+            cursor: pointer;
+            transition: all var(--duration-fast);
+            border-radius: var(--radius-sm);
+            flex: 1;
+            max-width: 80px;
+        }
+
+        .nav-item:hover {
+            background: var(--color-background);
+        }
+
+        .nav-item.active {
+            color: var(--color-primary);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+        }
+
+        .nav-label {
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+        }
+
+        /* Utilities */
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-md {
+            margin-top: var(--space-md);
+        }
+
+        .mt-lg {
+            margin-top: var(--space-lg);
+        }
+
+        .mb-md {
+            margin-bottom: var(--space-md);
+        }
+
+        .mb-lg {
+            margin-bottom: var(--space-lg);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-content {
+                padding: var(--space-md);
+            }
+
+            .auth-container, .onboarding-container {
+                padding: var(--space-lg);
+            }
+
+            .emoji-picker {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Confetti Animation */
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--color-primary);
+            animation: confetti-fall 3s linear;
+            pointer-events: none;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Splash Screen -->
+        <div id="splash-view" class="view splash-view active">
+            <div class="logo-container">
+                <div class="logo"></div>
+                <div class="logo-text">Engage</div>
+            </div>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcome-view" class="view auth-view">
+            <div class="auth-container">
+                <div class="auth-logo"></div>
+                <div class="auth-header">
+                    <h1 class="auth-title">Welcome to Engage</h1>
+                    <p class="auth-subtitle">Your intelligent work companion for productivity and wellbeing</p>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <button class="btn btn-primary btn-full" onclick="goToView('signup-view')">
+                        Get Started
+                    </button>
+                    <button class="btn btn-secondary btn-full" onclick="goToView('login-view')">
+                        Sign In
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sign Up View -->
+        <div id="signup-view" class="view auth-view">
+            <div class="auth-container">
+                <button class="btn-text" onclick="goToView('welcome-view')" style="align-self: flex-start; margin-bottom: 16px;">
+                    ← Back
+                </button>
+                <div class="auth-logo"></div>
+                <div class="auth-header">
+                    <h1 class="auth-title">Create your account</h1>
+                    <p class="auth-subtitle">Join thousands using Engage</p>
+                </div>
+                <form onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label class="form-label">Work Email</label>
+                        <input type="email" class="form-input" placeholder="sarah@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-input" placeholder="Sarah Chen" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Continue →
+                    </button>
+                    <div class="text-center mt-lg">
+                        <span style="color: var(--color-text-secondary); font-size: 14px;">
+                            Already have an account?
+                            <a href="#" onclick="goToView('login-view'); return false;" style="color: var(--color-primary); text-decoration: none;">
+                                Sign in
+                            </a>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Login View -->
+        <div id="login-view" class="view auth-view">
+            <div class="auth-container">
+                <button class="btn-text" onclick="goToView('welcome-view')" style="align-self: flex-start; margin-bottom: 16px;">
+                    ← Back
+                </button>
+                <div class="auth-logo"></div>
+                <div class="auth-header">
+                    <h1 class="auth-title">Welcome back</h1>
+                    <p class="auth-subtitle">Sign in to continue</p>
+                </div>
+                <form onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="sarah@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">
+                        Sign In
+                    </button>
+                    <div class="text-center mt-lg">
+                        <span style="color: var(--color-text-secondary); font-size: 14px;">
+                            Don't have an account?
+                            <a href="#" onclick="goToView('signup-view'); return false;" style="color: var(--color-primary); text-decoration: none;">
+                                Sign up
+                            </a>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Onboarding View -->
+        <div id="onboarding-view" class="view onboarding-view">
+            <div class="onboarding-container">
+                <div class="onboarding-progress">
+                    <div class="progress-dot active"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                    <div class="progress-dot"></div>
+                </div>
+
+                <!-- Step 1: Welcome -->
+                <div class="onboarding-step active" data-step="1">
+                    <h2 class="step-title">Let's get you started</h2>
+                    <p class="step-description">We'll ask you a few questions to personalize your experience. This takes about 2 minutes.</p>
+                    <button class="btn btn-primary btn-full" onclick="nextStep()">
+                        Let's go →
+                    </button>
+                </div>
+
+                <!-- Step 2: Role -->
+                <div class="onboarding-step" data-step="2">
+                    <h2 class="step-title">What's your role?</h2>
+                    <p class="step-description">This helps us customize Engage for you</p>
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="e.g., Product Designer" id="role-input">
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="nextStep()">
+                        Continue →
+                    </button>
+                </div>
+
+                <!-- Step 3: Team -->
+                <div class="onboarding-step" data-step="3">
+                    <h2 class="step-title">Which team are you on?</h2>
+                    <p class="step-description">We'll connect you with your teammates</p>
+                    <div class="form-group">
+                        <input type="text" class="form-input" placeholder="e.g., Product Team" id="team-input">
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="nextStep()">
+                        Continue →
+                    </button>
+                </div>
+
+                <!-- Step 4: Goal -->
+                <div class="onboarding-step" data-step="4">
+                    <h2 class="step-title">What's one thing you want to achieve this month?</h2>
+                    <p class="step-description">Don't worry, you can change this later</p>
+                    <div class="form-group">
+                        <textarea class="form-input" placeholder="e.g., Launch the new customer dashboard" id="goal-input" style="height: 120px; padding-top: 16px; resize: none;"></textarea>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="nextStep()">
+                        Continue →
+                    </button>
+                </div>
+
+                <!-- Step 5: Mood -->
+                <div class="onboarding-step" data-step="5">
+                    <h2 class="step-title">How are you feeling about work today?</h2>
+                    <p class="step-description">This helps us support you better</p>
+                    <div class="emoji-picker">
+                        <div class="emoji-option" onclick="selectMood(this, 'ready')">
+                            <div class="emoji">😊</div>
+                            <div class="emoji-label">Ready</div>
+                        </div>
+                        <div class="emoji-option" onclick="selectMood(this, 'good')">
+                            <div class="emoji">😌</div>
+                            <div class="emoji-label">Good</div>
+                        </div>
+                        <div class="emoji-option" onclick="selectMood(this, 'okay')">
+                            <div class="emoji">😐</div>
+                            <div class="emoji-label">Okay</div>
+                        </div>
+                        <div class="emoji-option" onclick="selectMood(this, 'tired')">
+                            <div class="emoji">😓</div>
+                            <div class="emoji-label">Tired</div>
+                        </div>
+                        <div class="emoji-option" onclick="selectMood(this, 'stressed')">
+                            <div class="emoji">😰</div>
+                            <div class="emoji-label">Stressed</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="nextStep()" id="mood-continue-btn" disabled>
+                        Continue →
+                    </button>
+                </div>
+
+                <!-- Step 6: Work Style -->
+                <div class="onboarding-step" data-step="6">
+                    <h2 class="step-title">What's your typical work style?</h2>
+                    <p class="step-description">We'll help you stay productive</p>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" style="margin-right: 8px;">
+                            I prefer deep focus blocks
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" style="margin-right: 8px;">
+                            I work best in the morning
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <input type="checkbox" style="margin-right: 8px;">
+                            I like frequent collaboration
+                        </label>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="nextStep()">
+                        Continue →
+                    </button>
+                </div>
+
+                <!-- Step 7: Complete -->
+                <div class="onboarding-step" data-step="7">
+                    <div style="text-align: center;">
+                        <div style="font-size: 64px; margin-bottom: 24px;">✨</div>
+                        <h2 class="step-title">You're all set!</h2>
+                        <p class="step-description">Let's start making your workday better</p>
+                    </div>
+                    <button class="btn btn-primary btn-full" onclick="completeOnboarding()">
+                        Go to Engage →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App View -->
+        <div id="main-view" class="view main-view">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="emoji" style="font-size: 24px;" id="current-mood">😊</div>
+                    <div class="header-user">
+                        <div class="user-name" id="user-name">Sarah Chen</div>
+                        <div class="user-role" id="user-role">Product Designer</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="icon-btn" title="Search">
+                        <span style="font-size: 20px;">🔍</span>
+                    </button>
+                    <button class="icon-btn" title="Profile">
+                        <span style="font-size: 20px;">👤</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <main class="app-content" id="app-content">
+                <!-- FlowBoard Content (default) -->
+                <div id="flowboard-content">
+                    <div class="section-title">Your Focus Today</div>
+
+                    <div class="priority-card">
+                        <div class="card-label">
+                            🎯 Priority #1
+                        </div>
+                        <h3 class="card-title" id="goal-title">Launch customer dashboard</h3>
+                        <div class="card-meta">
+                            <div class="meta-item">
+                                <span>📅</span>
+                                <span>Due in 12 days</span>
+                            </div>
+                            <div class="meta-item">
+                                <span>🔥</span>
+                                <span>High Impact</span>
+                            </div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 35%"></div>
+                        </div>
+                        <div style="margin-bottom: 16px; color: var(--color-text-secondary); font-size: 14px;">
+                            Next step: Complete user research
+                        </div>
+                        <div class="card-actions">
+                            <button class="btn btn-primary">
+                                Start This
+                            </button>
+                            <button class="btn btn-secondary">
+                                View Goal
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="section-title">Also On Your Plate</div>
+
+                    <div class="task-list">
+                        <div class="task-card" onclick="toggleTask(this)">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Review design system updates</div>
+                                <div class="task-time">📅 Due today • ⏱ 30 min</div>
+                            </div>
+                        </div>
+                        <div class="task-card" onclick="toggleTask(this)">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Team standup meeting</div>
+                                <div class="task-time">📅 Today 10:00 AM • ⏱ 15 min</div>
+                            </div>
+                        </div>
+                        <div class="task-card" onclick="toggleTask(this)">
+                            <div class="task-checkbox"></div>
+                            <div class="task-content">
+                                <div class="task-title">Give feedback to Jordan</div>
+                                <div class="task-time">📅 This week • ⏱ 20 min</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Goals Content -->
+                <div id="goals-content" style="display: none;">
+                    <div class="section-title">Your Goals</div>
+                    <div class="priority-card">
+                        <h3 class="card-title">🎯 Active Goals</h3>
+                        <p style="color: var(--color-text-secondary); margin-bottom: 24px;">
+                            You're working on 3 goals this month
+                        </p>
+                        <div class="task-list">
+                            <div class="task-card">
+                                <div class="task-content">
+                                    <div class="task-title">Launch customer dashboard</div>
+                                    <div class="progress-bar" style="margin-top: 8px;">
+                                        <div class="progress-fill" style="width: 35%"></div>
+                                    </div>
+                                    <div class="task-time">35% complete • Due in 12 days</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-content">
+                                    <div class="task-title">Improve design system</div>
+                                    <div class="progress-bar" style="margin-top: 8px;">
+                                        <div class="progress-fill" style="width: 60%"></div>
+                                    </div>
+                                    <div class="task-time">60% complete • Due in 20 days</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-content">
+                                    <div class="task-title">User research study</div>
+                                    <div class="progress-bar" style="margin-top: 8px;">
+                                        <div class="progress-fill" style="width: 10%"></div>
+                                    </div>
+                                    <div class="task-time">10% complete • Due in 30 days</div>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary btn-full mt-lg">
+                            + Create New Goal
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Team Content -->
+                <div id="team-content" style="display: none;">
+                    <div class="section-title">KudosStream</div>
+                    <div class="priority-card">
+                        <div style="text-align: center; padding: 48px 0;">
+                            <div style="font-size: 48px; margin-bottom: 16px;">👋</div>
+                            <h3 class="card-title">Start sharing appreciation</h3>
+                            <p style="color: var(--color-text-secondary); margin-bottom: 24px;">
+                                Recognize someone who helped you today
+                            </p>
+                            <button class="btn btn-primary" onclick="showConfetti()">
+                                🎉 Give Recognition
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- You Content -->
+                <div id="you-content" style="display: none;">
+                    <div class="section-title">Your Profile</div>
+                    <div class="priority-card">
+                        <div style="text-align: center; margin-bottom: 24px;">
+                            <div style="width: 80px; height: 80px; background: var(--gradient-button); border-radius: 50%; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 32px;">
+                                👤
+                            </div>
+                            <h3 class="card-title" id="profile-name">Sarah Chen</h3>
+                            <div style="color: var(--color-text-secondary);" id="profile-role">Product Designer • Product Team</div>
+                        </div>
+
+                        <div class="task-list">
+                            <div class="task-card">
+                                <div class="task-content">
+                                    <div class="task-title">🎯 Active Goals: 3</div>
+                                    <div class="task-time">All on track</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-content">
+                                    <div class="task-title">🙏 Recognition Received: 12</div>
+                                    <div class="task-time">This quarter</div>
+                                </div>
+                            </div>
+                            <div class="task-card">
+                                <div class="task-content">
+                                    <div class="task-title">📚 Skills Developing: 2</div>
+                                    <div class="task-time">Design systems & Presentation</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary btn-full mt-lg">
+                            View Full Profile
+                        </button>
+                    </div>
+                </div>
+            </main>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav">
+                <div class="nav-item active" onclick="switchTab('flowboard')">
+                    <div class="nav-icon">📊</div>
+                    <div class="nav-label">Goals</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('team')">
+                    <div class="nav-icon">💬</div>
+                    <div class="nav-label">Team</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('goals')">
+                    <div class="nav-icon">🎓</div>
+                    <div class="nav-label">Grow</div>
+                </div>
+                <div class="nav-item" onclick="switchTab('you')">
+                    <div class="nav-icon">👤</div>
+                    <div class="nav-label">You</div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <script>
+        // Global State
+        let currentStep = 1;
+        let selectedMood = null;
+        let userData = {
+            name: 'Sarah Chen',
+            role: 'Product Designer',
+            team: 'Product Team',
+            goal: 'Launch customer dashboard',
+            mood: 'ready'
+        };
+
+        // View Navigation
+        function goToView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+
+        // Splash Screen
+        setTimeout(() => {
+            goToView('welcome-view');
+        }, 3000);
+
+        // Auth Handlers
+        function handleSignup(e) {
+            e.preventDefault();
+            goToView('onboarding-view');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            goToView('main-view');
+        }
+
+        // Onboarding
+        function nextStep() {
+            const steps = document.querySelectorAll('.onboarding-step');
+            const progressDots = document.querySelectorAll('.progress-dot');
+
+            // Save data from current step
+            if (currentStep === 2) {
+                userData.role = document.getElementById('role-input').value || 'Product Designer';
+            } else if (currentStep === 3) {
+                userData.team = document.getElementById('team-input').value || 'Product Team';
+            } else if (currentStep === 4) {
+                userData.goal = document.getElementById('goal-input').value || 'Launch customer dashboard';
+            }
+
+            steps[currentStep - 1].classList.remove('active');
+            progressDots[currentStep - 1].classList.remove('active');
+            progressDots[currentStep - 1].classList.add('completed');
+
+            currentStep++;
+
+            if (currentStep <= 7) {
+                steps[currentStep - 1].classList.add('active');
+                progressDots[currentStep - 1].classList.add('active');
+            }
+        }
+
+        function selectMood(element, mood) {
+            document.querySelectorAll('.emoji-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            selectedMood = mood;
+            userData.mood = mood;
+            document.getElementById('mood-continue-btn').disabled = false;
+        }
+
+        function completeOnboarding() {
+            // Update user data in main view
+            document.getElementById('user-name').textContent = userData.name;
+            document.getElementById('user-role').textContent = userData.role;
+            document.getElementById('goal-title').textContent = userData.goal;
+            document.getElementById('profile-name').textContent = userData.name;
+            document.getElementById('profile-role').textContent = `${userData.role} • ${userData.team}`;
+
+            // Set mood emoji
+            const moodEmojis = {
+                'ready': '😊',
+                'good': '😌',
+                'okay': '😐',
+                'tired': '😓',
+                'stressed': '😰'
+            };
+            document.getElementById('current-mood').textContent = moodEmojis[userData.mood] || '😊';
+
+            showConfetti();
+            setTimeout(() => {
+                goToView('main-view');
+            }, 500);
+        }
+
+        // Task Management
+        function toggleTask(element) {
+            element.classList.toggle('completed');
+            if (element.classList.contains('completed')) {
+                element.querySelector('.task-checkbox').innerHTML = '✓';
+                // Mini celebration
+                const rect = element.getBoundingClientRect();
+                createMiniConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            } else {
+                element.querySelector('.task-checkbox').innerHTML = '';
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            // Update nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Update content
+            document.querySelectorAll('#app-content > div').forEach(content => {
+                content.style.display = 'none';
+            });
+            document.getElementById(`${tab}-content`).style.display = 'block';
+
+            // Scroll to top
+            document.querySelector('.app-content').scrollTop = 0;
+        }
+
+        // Confetti Effects
+        function showConfetti() {
+            const colors = ['#4A90E2', '#7ED321', '#F5A623', '#FF6B6B', '#4ECDC4'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    createConfetti(colors[Math.floor(Math.random() * colors.length)]);
+                }, i * 30);
+            }
+        }
+
+        function createConfetti(color) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.background = color;
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+        }
+
+        function createMiniConfetti(x, y) {
+            const colors = ['#4A90E2', '#7ED321', '#F5A623'];
+            for (let i = 0; i < 10; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = x + 'px';
+                confetti.style.top = y + 'px';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDuration = '1s';
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 1000);
+            }
+        }
+
+        // Add smooth scrolling
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
